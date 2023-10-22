@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flappy Bird</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #70c5ce;
+        }
+
+        .game-container {
+            position: relative;
+            width: 300px;
+            height: 400px;
+            background-color: #4c9aaf;
+        }
+
+        .bird {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background-color: #ffad33;
+            bottom: 50%;
+            transform: translateY(50%);
+        }
+
+        .pipe {
+            position: absolute;
+            width: 60px;
+            height: 250px;
+            background-color: #6a994e;
+            right: -60px;
+        }
+
+        button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #ffad33;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="bird" id="bird"></div>
+        <div class="pipe" id="pipe"></div>
+    </div>
+    <button id="start-button">Start</button>
+    <script>
+        const bird = document.getElementById("bird");
+        const pipe = document.getElementById("pipe");
+        const startButton = document.getElementById("start-button");
+
+        let birdPosition = 50;
+        let gravity = 2;
+        let isGameStarted = false;
+
+        function jump() {
+            if (!isGameStarted) return;
+            birdPosition -= 50;
+            bird.style.transform = `translateY(${birdPosition}px)`;
+        }
+
+        function gameLoop() {
+            if (isGameStarted) {
+                birdPosition += gravity;
+                bird.style.transform = `translateY(${birdPosition}px)`;
+                pipe.style.right = `${parseInt(pipe.style.right) - 5}px`;
+
+                if (birdPosition > 400 || birdPosition < 0) {
+                    endGame();
+                }
+
+                if (parseInt(pipe.style.right) < -60) {
+                    pipe.style.right = "300px";
+                }
+
+                if (
+                    birdPosition < 0 ||
+                    birdPosition > 400 ||
+                    (parseInt(pipe.style.right) < 100 &&
+                        parseInt(pipe.style.right) > 0 &&
+                        (birdPosition < 100 || birdPosition > 300))
+                ) {
+                    endGame();
+                }
+            }
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        function startGame() {
+            isGameStarted = true;
+            startButton.style.display = "none";
+        }
+
+        function endGame() {
+            isGameStarted = false;
+            startButton.style.display = "block";
+            birdPosition = 50;
+            bird.style.transform = `translateY(${birdPosition}px)`;
+            pipe.style.right = "-60px";
+        }
+
+        startButton.addEventListener("click", startGame);
+        document.addEventListener("keydown", jump);
+        gameLoop();
+    </script>
+</body>
+</html>
